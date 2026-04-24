@@ -36,6 +36,42 @@ export async function createLead(formData: FormData) {
   return { data }
 }
 
+export async function updateLead(id: string, formData: FormData) {
+  const supabase = await createClient()
+
+  const fullName = formData.get('full_name') as string
+  const phone = formData.get('phone') as string
+  const email = formData.get('email') as string
+  const company = formData.get('company') as string
+  const title = formData.get('title') as string
+  const status = formData.get('status') as string
+  const source = formData.get('source') as string
+
+  const { data, error } = await supabase
+    .from('leads')
+    .update({
+      full_name: fullName,
+      phone,
+      email,
+      company,
+      title,
+      status,
+      source,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id)
+    .select()
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath('/leads')
+  revalidatePath(`/leads/${id}`)
+  revalidatePath('/')
+  return { data }
+}
+
 export async function deleteLead(id: string) {
   const supabase = await createClient()
 

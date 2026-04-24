@@ -39,7 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createLead, deleteLead } from './actions'
+import { createLead, deleteLead, updateLead } from './actions'
 import { useSearchParams, useRouter } from 'next/navigation'
 
 import { toast } from "sonner"
@@ -68,6 +68,8 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [isAddOpen, setIsAddOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
+  const [currentLead, setCurrentLead] = useState<Lead | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const router = useRouter()
@@ -99,6 +101,23 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
       if (result.data) {
         setLeads([result.data[0] as Lead, ...leads])
         toast.success("Thêm khách hàng thành công!")
+      }
+    }
+  }
+
+  async function handleEditLead(formData: FormData) {
+    if (!currentLead) return
+    setIsSubmitting(true)
+    const result = await updateLead(currentLead.id, formData)
+    setIsSubmitting(false)
+    
+    if (result?.error) {
+      toast.error(result.error)
+    } else {
+      setIsEditOpen(false)
+      if (result.data) {
+        setLeads(leads.map(l => l.id === currentLead.id ? result.data[0] as Lead : l))
+        toast.success("Cập nhật khách hàng thành công!")
       }
     }
   }
@@ -228,6 +247,79 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
               </form>
             </DialogContent>
           </Dialog>
+          <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Chỉnh sửa khách hàng</DialogTitle>
+                <DialogDescription>
+                  Cập nhật thông tin chi tiết của khách hàng.
+                </DialogDescription>
+              </DialogHeader>
+              {currentLead && (
+                <form action={handleEditLead}>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="edit_full_name">Tên khách hàng *</Label>
+                      <Input id="edit_full_name" name="full_name" required defaultValue={currentLead.full_name} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="edit_phone">Số điện thoại</Label>
+                        <Input id="edit_phone" name="phone" defaultValue={currentLead.phone || ''} />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="edit_email">Email</Label>
+                        <Input id="edit_email" name="email" type="email" defaultValue={currentLead.email || ''} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="edit_status">Trạng thái</Label>
+                        <Select name="status" defaultValue={currentLead.status}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Trạng thái" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Mới">Mới</SelectItem>
+                            <SelectItem value="Đang tư vấn">Đang tư vấn</SelectItem>
+                            <SelectItem value="Đã mua">Đã mua</SelectItem>
+                            <SelectItem value="Từ chối">Từ chối</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="edit_source">Nguồn</Label>
+                        <Select name="source" defaultValue={currentLead.source || 'Khác'}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Nguồn" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Facebook Ads">Facebook Ads</SelectItem>
+                            <SelectItem value="Google Search">Google Search</SelectItem>
+                            <SelectItem value="Referral">Referral</SelectItem>
+                            <SelectItem value="Khác">Khác</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="edit_company">Công ty</Label>
+                      <Input id="edit_company" name="company" defaultValue={currentLead.company || ''} />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="edit_title">Chức vụ</Label>
+                      <Input id="edit_title" name="title" defaultValue={currentLead.title || ''} />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit" disabled={isSubmitting} className="bg-[#c66540] hover:bg-[#a55232]">
+                      {isSubmitting ? 'Đang lưu...' : 'Cập nhật'}
+                    </Button>
+                  </DialogFooter>
+                </form>
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
@@ -293,8 +385,14 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenuLabel>Hành động</DropdownMenuLabel>
+                        <DropdownMenuItem onClick={() => {
+                          setCurrentLead(lead)
+                          setIsEditOpen(true)
+                        }}>
+                          <Edit className="w-4 h-4 mr-2" /> Chỉnh sửa nhanh
+                        </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => router.push(`/leads/${lead.id}`)}>
-                          <Edit className="w-4 h-4 mr-2" /> Xem / Sửa chi tiết
+                          <Search className="w-4 h-4 mr-2" /> Xem chi tiết
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(lead.id)}>
