@@ -21,11 +21,15 @@ export async function login(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect('/')
-  } catch (err) {
-    console.error('Unexpected login error:', err)
-    return { error: 'Đã xảy ra lỗi không xác định khi đăng nhập.' }
+  } catch (err: any) {
+    console.error('Unexpected login error detail:', {
+      message: err.message,
+      stack: err.stack,
+      name: err.name
+    })
+    return { error: `Lỗi hệ thống: ${err.message || 'Không xác định'}` }
   }
+  redirect('/')
 }
 
 export async function signup(formData: FormData) {
@@ -45,11 +49,11 @@ export async function signup(formData: FormData) {
     }
 
     revalidatePath('/', 'layout')
-    redirect('/')
   } catch (err) {
     console.error('Unexpected signup error:', err)
     return { error: 'Đã xảy ra lỗi không xác định khi đăng ký.' }
   }
+  redirect('/')
 }
 
 export async function signout() {
