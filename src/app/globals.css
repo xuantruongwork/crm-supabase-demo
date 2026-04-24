@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  :root {
+    --background: #f4f0e9; /* Light beige/off-white */
+    --foreground: #2d2a26;
+    --card: #ffffff;
+    --card-foreground: #2d2a26;
+    --popover: #ffffff;
+    --popover-foreground: #2d2a26;
+    --primary: #c66540; /* CRM Pro main orange */
+    --primary-foreground: #ffffff;
+    --secondary: #e6e2db;
+    --secondary-foreground: #2d2a26;
+    --muted: #e6e2db;
+    --muted-foreground: #6b665c;
+    --accent: #e6e2db;
+    --accent-foreground: #2d2a26;
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --border: #e6e2db;
+    --input: #e6e2db;
+    --ring: #c66540;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: #1c1917;
+    --foreground: #fafaf9;
+    --card: #292524;
+    --card-foreground: #fafaf9;
+    --popover: #292524;
+    --popover-foreground: #fafaf9;
+    --primary: #c66540;
+    --primary-foreground: #ffffff;
+    --secondary: #44403c;
+    --secondary-foreground: #fafaf9;
+    --muted: #44403c;
+    --muted-foreground: #a8a29e;
+    --accent: #44403c;
+    --accent-foreground: #fafaf9;
+    --destructive: #7f1d1d;
+    --destructive-foreground: #fafaf9;
+    --border: #44403c;
+    --input: #44403c;
+    --ring: #c66540;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
