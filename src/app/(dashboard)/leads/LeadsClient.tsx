@@ -42,6 +42,8 @@ import {
 import { createLead, deleteLead } from './actions'
 import { useSearchParams, useRouter } from 'next/navigation'
 
+import { toast } from "sonner"
+
 export type Lead = {
   id: string
   full_name: string
@@ -91,11 +93,12 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
     setIsSubmitting(false)
     
     if (result?.error) {
-      alert(result.error)
+      toast.error(result.error)
     } else {
       setIsAddOpen(false)
       if (result.data) {
         setLeads([result.data[0] as Lead, ...leads])
+        toast.success("Thêm khách hàng thành công!")
       }
     }
   }
@@ -104,9 +107,10 @@ export default function LeadsClient({ initialLeads }: { initialLeads: Lead[] }) 
     if (confirm('Bạn có chắc chắn muốn xoá khách hàng này?')) {
       const result = await deleteLead(id)
       if (result?.error) {
-        alert(result.error)
+        toast.error(result.error)
       } else {
         setLeads(leads.filter(l => l.id !== id))
+        toast.success("Đã xoá khách hàng.")
       }
     }
   }

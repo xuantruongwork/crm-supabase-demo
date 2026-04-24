@@ -19,6 +19,8 @@ import {
 import { addActivity, updateLeadStatus } from './actions'
 import Link from 'next/link'
 
+import { toast } from "sonner"
+
 export type Activity = {
   id: string
   type: string
@@ -44,7 +46,12 @@ export default function LeadDetailClient({ lead, activities }: { lead: Lead, act
 
   async function handleStatusChange(val: string | null) {
     if (val) {
-      await updateLeadStatus(lead.id, val)
+      const res = await updateLeadStatus(lead.id, val)
+      if (res?.error) {
+        toast.error(res.error)
+      } else {
+        toast.success(`Đã chuyển trạng thái thành: ${val}`)
+      }
     }
   }
 
@@ -54,9 +61,10 @@ export default function LeadDetailClient({ lead, activities }: { lead: Lead, act
     formData.append('type', activeTab)
     const res = await addActivity(formData)
     if (res?.error) {
-      alert(res.error)
+      toast.error(res.error)
     } else {
       (document.getElementById('activity-form') as HTMLFormElement).reset()
+      toast.success(`Đã thêm ${activeTab.toLowerCase()} mới!`)
     }
     setIsSubmitting(false)
   }
