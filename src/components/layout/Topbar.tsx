@@ -18,11 +18,9 @@ export default function Topbar() {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button asChild className="bg-[#c66540] hover:bg-[#a55232] text-white rounded-lg h-10 px-4">
-          <Link href="/leads?action=new">
-            <Plus className="w-4 h-4 mr-2" />
-            Thêm Lead
-          </Link>
+        <Button render={<Link href="/leads?action=new" />} className="bg-[#c66540] hover:bg-[#a55232] text-white rounded-lg h-10 px-4">
+          <Plus className="w-4 h-4 mr-2" />
+          Thêm Lead
         </Button>
         
         <div className="flex items-center gap-2 border-l border-stone-200 pl-4">
