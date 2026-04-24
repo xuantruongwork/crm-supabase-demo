@@ -25,13 +25,21 @@ export default async function CalendarPage() {
       status,
       created_at,
       due_date,
-      leads ( full_name )
+      lead_id,
+      leads ( id, full_name )
     `)
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching activities:', error)
-  }
+  // Fetch leads for the dropdown
+  const { data: leads } = await supabase
+    .from('leads')
+    .select('id, full_name')
+    .order('full_name')
 
-  return <CalendarClient initialActivities={(activities as unknown as CalendarActivity[]) || []} />
+  return (
+    <CalendarClient 
+      initialActivities={(activities as unknown as CalendarActivity[]) || []} 
+      leads={leads || []}
+    />
+  )
 }
