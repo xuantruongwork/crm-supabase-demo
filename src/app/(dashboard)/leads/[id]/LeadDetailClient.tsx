@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select'
 import { addActivity, updateLeadStatus } from './actions'
 import { updateLead, deleteLead } from '../actions'
+import { useRouter } from 'next/navigation'
 import {
   Dialog,
   DialogContent,
@@ -48,6 +49,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function LeadDetailClient({ lead, activities }: { lead: Lead, activities: Activity[] }) {
+  const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('Ghi chú')
@@ -180,7 +182,7 @@ export default function LeadDetailClient({ lead, activities }: { lead: Lead, act
                       <Select name="source" defaultValue={currentLead.source || 'Khác'}>
                         <SelectTrigger>
                           <SelectValue placeholder="Nguồn" />
-                        </SelectValue>
+                        </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Facebook Ads">Facebook Ads</SelectItem>
                           <SelectItem value="Google Search">Google Search</SelectItem>
